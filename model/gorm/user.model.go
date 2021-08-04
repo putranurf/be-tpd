@@ -12,8 +12,6 @@ func GetUsers() (Response, error) {
 	var arrobj []migration.User
 	var res Response
 
-	// data := []migration.User{}
-
 	if err := db.GetDBInstance().Find(&obj, 1).Error; err != nil {
 		return res, err
 	}

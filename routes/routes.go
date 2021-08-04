@@ -14,5 +14,9 @@ func Init() *echo.Echo {
 	})
 
 	e.GET("/users", controller.GetUsers)
+
+	e.GET("/generate-hash/:password", controller.GenerateHashPassword)
+	e.POST("/login", controller.CheckLogin)
+
 	return e
 }

@@ -73,14 +73,6 @@
   version = "v0.0.13"
 
 [[projects]]
-  digest = "1:dc48dff981a895912c33cf272b1d869c216d058bd4025736cb481d3ceeed6872"
-  name = "github.com/tkanos/gonfig"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "e83209aed2d171bab5ffb312a1e630110481cb99"
-  version = "1.0"
-
-[[projects]]
   digest = "1:c468422f334a6b46a19448ad59aaffdfc0a36b08fdcc1c749a0b29b6453d7e59"
   name = "github.com/valyala/bytebufferpool"
   packages = ["."]
@@ -98,11 +90,13 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:699d068af7aaa15f3e0282632500301396f9a4b8181b12a1643aa49c0d78a7bc"
+  digest = "1:ddd7c609b2ce890df292ead9ebfc2bbacc74ef1d518e59371e7b76e13468596e"
   name = "golang.org/x/crypto"
   packages = [
     "acme",
     "acme/autocert",
+    "bcrypt",
+    "blowfish",
   ]
   pruneopts = "UT"
   revision = "a769d52b0f97a420f3dcafc17f8b3384217859a2"
@@ -187,7 +181,7 @@
   input-imports = [
     "github.com/joho/godotenv",
     "github.com/labstack/echo",
-    "github.com/tkanos/gonfig",
+    "golang.org/x/crypto/bcrypt",
     "gorm.io/driver/postgres",
     "gorm.io/gorm",
   ]
