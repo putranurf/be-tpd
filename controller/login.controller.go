@@ -22,14 +22,10 @@ func CheckLogin(c echo.Context) error {
 
 	res, err := gorm.CheckLogin(username, password)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"message": err.Error(),
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  echo.ErrUnauthorized.Code,
+			"message": echo.ErrUnauthorized.Message,
 		})
 	}
-
-	if !res {
-		return echo.ErrUnauthorized
-	}
-
-	return c.String(http.StatusOK, "berhasil login")
+	return c.JSON(http.StatusOK, res)
 }

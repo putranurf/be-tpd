@@ -8,14 +8,14 @@ import (
 )
 
 func GetUsers() (Response, error) {
-	var obj migration.User
+	// var obj migration.User
 	var arrobj []migration.User
 	var res Response
 
-	if err := db.GetDBInstance().Find(&obj, 1).Error; err != nil {
+	if err := db.GetDBInstance().Find(&arrobj).Error; err != nil {
 		return res, err
 	}
-	arrobj = append(arrobj, obj)
+	arrobj = append(arrobj)
 
 	res.Status = http.StatusOK
 	res.Message = "Success"
