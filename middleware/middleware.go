@@ -5,6 +5,5 @@ import (
 )
 
 var IsAuthenticated = middleware.JWTWithConfig(middleware.JWTConfig{
-	// Claims:     &jwtCustomClaims{},
 	SigningKey: []byte("secret"),
 })

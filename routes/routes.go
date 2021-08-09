@@ -5,6 +5,9 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/putranurf/be-tpd/controller"
+	"github.com/putranurf/be-tpd/controller/auth"
+	"github.com/putranurf/be-tpd/controller/token"
+	"github.com/putranurf/be-tpd/controller/user"
 	"github.com/putranurf/be-tpd/middleware"
 )
 
@@ -14,10 +17,17 @@ func Init() *echo.Echo {
 		return c.String(http.StatusOK, "Hello World")
 	})
 
-	e.GET("/users", controller.GetUsers, middleware.IsAuthenticated)
+	//Token
+	e.GET("/fetch-token", token.FetchToken)
 
-	e.GET("/generate-hash/:password", controller.GenerateHashPassword)
-	e.POST("/login", controller.CheckLogin)
+	//Auth
+	e.POST("/login", auth.CheckLogin, middleware.IsAuthenticated)
+	e.GET("/generate-hash/:password", auth.GenerateHashPassword)
+
+	//CRUD
+	e.GET("/users", user.GetUsers, middleware.IsAuthenticated)
+	e.GET("/test-struct", controller.TestStructValidation)
+	e.GET("/test-var", controller.TestVarValidation)
 
 	return e
 }
