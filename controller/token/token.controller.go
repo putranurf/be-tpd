@@ -6,6 +6,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
+	"github.com/putranurf/be-tpd/model/gorm"
 )
 
 type jwtCustomClaims struct {
@@ -30,15 +31,18 @@ func FetchToken(c echo.Context) error {
 
 	// Generate encoded token and send it as response.
 	t, err := token.SignedString([]byte("secret"))
+
+	result, err := gorm.FetchToken(t)
+
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"status":  echo.ErrUnauthorized.Code,
-			"message": echo.ErrUnauthorized.Message,
-		})
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, echo.Map{
-		"token": t,
-	})
+	c.Response().Header().Set("token", t)
+	// c.Response().WriteHeader(http.StatusOK)
+
+	return c.JSON(http.StatusOK, result)
+
+	// return json.NewEncoder(c.Response()).Encode(result)
 
 }

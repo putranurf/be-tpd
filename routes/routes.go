@@ -18,7 +18,7 @@ func Init() *echo.Echo {
 	})
 
 	//Token
-	e.GET("/fetch-token", token.FetchToken)
+	e.POST("/fetch-token", token.FetchToken)
 
 	//Auth
 	e.POST("/login", auth.CheckLogin, middleware.IsAuthenticated)
