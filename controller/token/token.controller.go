@@ -7,23 +7,23 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"github.com/putranurf/be-tpd/model/gorm"
+	migration "github.com/putranurf/be-tpd/model/migration/token"
 )
-
-type jwtCustomClaims struct {
-	Name  string `json:"name"`
-	Admin bool   `json:"admin"`
-	jwt.StandardClaims
-}
 
 func FetchToken(c echo.Context) error {
 
+	name := c.FormValue("name")
+	secret_key := c.FormValue("secret_key")
+	device_id := c.FormValue("device_id")
+	device_type := c.FormValue("device_type")
+
 	// Set custom claims
-	claims := &jwtCustomClaims{
-		"Jon Snow",
-		true,
+	claims := &migration.JwtCustomClaims{
+		name,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * 30).Unix(),
 		},
+		time.Now(),
 	}
 
 	// Create token with claims
@@ -32,17 +32,26 @@ func FetchToken(c echo.Context) error {
 	// Generate encoded token and send it as response.
 	t, err := token.SignedString([]byte("secret"))
 
-	result, err := gorm.FetchToken(t)
+	//Set Array Object For API
+	arrobj := &migration.Token{
+		0,
+		name,
+		device_id,
+		device_type,
+		t,
+		time.Unix(time.Now().Add(time.Minute*30).Unix(), 0),
+		time.Now(),
+		secret_key,
+	}
+
+	result, err := gorm.FetchToken(arrobj)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
 	}
 
+	//Set Token Header
 	c.Response().Header().Set("token", t)
-	// c.Response().WriteHeader(http.StatusOK)
-
 	return c.JSON(http.StatusOK, result)
-
-	// return json.NewEncoder(c.Response()).Encode(result)
 
 }
