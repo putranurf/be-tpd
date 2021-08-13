@@ -2,6 +2,7 @@ package token
 
 import (
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -30,7 +31,7 @@ func FetchToken(c echo.Context) error {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// Generate encoded token and send it as response.
-	t, err := token.SignedString([]byte("secret"))
+	t, err := token.SignedString([]byte(os.Getenv("TOKEN_SECRET")))
 
 	//Set Array Object For API
 	arrobj := &migration.Token{
@@ -47,7 +48,10 @@ func FetchToken(c echo.Context) error {
 	result, err := gorm.FetchToken(arrobj)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  echo.ErrUnauthorized.Code,
+			"message": echo.ErrUnauthorized.Message,
+		})
 	}
 
 	//Set Token Header
