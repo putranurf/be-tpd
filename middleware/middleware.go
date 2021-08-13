@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
 
@@ -68,4 +69,31 @@ func CheckToken(next http.Handler) http.Handler {
 func Pong(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("pong"))
+}
+
+func AuthToken(c echo.Context) {
+	tokenString := c.Response().Header().Get("token")
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if jwt.GetSigningMethod("HS256") != token.Method {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte("secret"), nil
+	})
+
+	if token != nil && err == nil {
+		fmt.Println("token verified")
+	} else {
+		// result := gin.H{
+		// 	"message": "not authorized",
+		// 	"error":   err.Error(),
+		// }
+		// c.JSON(http.StatusUnauthorized, result)
+		// c.Abort()
+
+		c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  echo.ErrUnauthorized.Code,
+			"message": echo.ErrUnauthorized.Message,
+		})
+	}
 }

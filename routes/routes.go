@@ -25,7 +25,7 @@ func Init() *echo.Echo {
 	e.GET("/generate-hash/:password", auth.GenerateHashPassword)
 
 	//CRUD
-	e.GET("/users", user.GetUsers, middleware.IsAuthenticated)
+	e.GET("/users", user.GetUsers, middleware.AuthToken())
 	e.GET("/test-struct", controller.TestStructValidation)
 	e.GET("/test-var", controller.TestVarValidation)
 
