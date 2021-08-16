@@ -1,99 +1,62 @@
 package middleware
 
 import (
-	"context"
-	"fmt"
-	"net/http"
 	"os"
-	"strings"
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 var IsAuthenticated = middleware.JWTWithConfig(middleware.JWTConfig{
-	SigningKey:  []byte(os.Getenv("TOKEN_SECRET")),
-	TokenLookup: "header:token",
+	SigningKey: []byte(os.Getenv("TOKEN_SECRET")),
+	// TokenLookup: "header:token",
 })
 
-// func CheckToken() {
-// 	authToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
-// 		if jwt.GetSigningMethod("HS256") != token.method {
-// 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-// 		}
-// 		return []byte(os.Getenv("TOKEN_SECRET")), nil
-// 	})
-// 	if authToken != nil {
-// 		if !authToken.Valid || err != nil {
-// 			log.Println(err)
-// 			err = errors.New("Failed auth : Please provide correct token !")
-// 		}
-// 	} else {
-// 		if claims, ok := authToken.Claims.(jwt.MapClaims); ok && authToken.Valid {
+// // TokenRefresherMiddleware middleware, which refreshes JWT tokens if the access token is about to expire.
+// func TokenRefresherMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+// 		// If the user is not authenticated (no user token data in the context), don't do anything.
+// 		// user := c.Get("user").(*jwt.Token)
+// 		// claims := user.Claims.(*migration.JwtCustomClaims)
+// 		// name := claims.Name
+// 		fmt.Println(c.Get("user"))
+// 		// fmt.Println(name)
 
+// 		if c.Get("user") == nil {
+// 			return next(c)
 // 		}
+// 		// Gets user token from the context.
+// 		// u := c.Get("user").(*jwt.Token)
+
+// 		claims := (*&migration.Token{})
+
+// 		// We ensure that a new token is not issued until enough time has elapsed
+// 		// In this case, a new token will only be issued if the old token is within
+// 		// 15 mins of expiry.
+// 		if claims.TokenExpired.Sub(time.Now()) < 15*time.Minute {
+// 			// Gets the refresh token from the cookie.
+// 			rc, err := c.Cookie("refresh-token")
+// 			if err == nil && rc != nil {
+// 				// Parses token and checks if it valid.
+// 				_, err := jwt.ParseWithClaims(rc.Value, migration.JwtCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+// 					return []byte(os.Getenv("TOKEN_SECRET")), nil
+// 				})
+// 				if err != nil {
+// 					if err == jwt.ErrSignatureInvalid {
+// 						// c.Response().Writer.WriteHeader(http.StatusUnauthorized)
+// 						fmt.Println("error unathorized")
+// 					}
+// 				}
+
+// 				// if tkn != nil && tkn.Valid {
+// 				// 	// If everything is good, update tokens.
+
+// 				// 	_ = token.GenerateTokensAndSetCookies(&user.User{
+// 				// 		Name: claims.Name,
+// 				// 	}, c)
+// 				// }
+// 			}
+// 		}
+
+// 		return next(c)
 // 	}
 // }
-
-func CheckToken(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authHeader := strings.Split(r.Header.Get("Authorization"), "Header ")
-		if len(authHeader) != 2 {
-			fmt.Println("Malformed token")
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Malformed Token"))
-		} else {
-			jwtToken := authHeader[1]
-			token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-				}
-				return []byte(os.Getenv("TOKEN_SECRET")), nil
-			})
-
-			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-				ctx := context.WithValue(r.Context(), "props", claims)
-				// Access context values in handlers like this
-				// props, _ := r.Context().Value("props").(jwt.MapClaims)
-				next.ServeHTTP(w, r.WithContext(ctx))
-			} else {
-				fmt.Println(err)
-				w.WriteHeader(http.StatusUnauthorized)
-				w.Write([]byte("Unauthorized"))
-			}
-		}
-	})
-}
-
-func Pong(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("pong"))
-}
-
-func AuthToken(c echo.Context) {
-	tokenString := c.Response().Header().Get("token")
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if jwt.GetSigningMethod("HS256") != token.Method {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		}
-
-		return []byte("secret"), nil
-	})
-
-	if token != nil && err == nil {
-		fmt.Println("token verified")
-	} else {
-		// result := gin.H{
-		// 	"message": "not authorized",
-		// 	"error":   err.Error(),
-		// }
-		// c.JSON(http.StatusUnauthorized, result)
-		// c.Abort()
-
-		c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"status":  echo.ErrUnauthorized.Code,
-			"message": echo.ErrUnauthorized.Message,
-		})
-	}
-}

@@ -2,16 +2,16 @@ package user
 
 import (
 	"fmt"
-
-	"github.com/putranurf/be-tpd/model/gorm"
-
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
+	"github.com/putranurf/be-tpd/model/gorm"
 )
 
 // GetUsers
 func GetUsers(c echo.Context) error {
+	// return func(c echo.Context) error {
+	// userCookie, _ := c.Cookie("user")
 	result, err := gorm.GetUsers()
 
 	for key, values := range c.Request().Header {
@@ -20,12 +20,6 @@ func GetUsers(c echo.Context) error {
 			fmt.Println(value)
 		}
 	}
-	// restoken, err := gorm.GetToken()
-
-	// token := c.Response().Header().Get("token")
-
-	// fmt.Println(token)
-	// fmt.Println(restoken)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
@@ -34,4 +28,6 @@ func GetUsers(c echo.Context) error {
 		})
 	}
 	return c.JSON(http.StatusOK, result)
+	// return c.String(http.StatusOK, "Hello World")
+	// }
 }
