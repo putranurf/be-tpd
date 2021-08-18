@@ -24,9 +24,9 @@ func FetchToken(obj interface{}) (Response, error) {
 	}
 
 	if err := db.GetDBInstance().Select("Name", "DeviceId", "DeviceType", "Token", "TokenExpired", "CreatedAt", "SecretKey").Create(&arrobj).Error; err != nil {
-
 		return res, err
 	}
+
 	res.Status = http.StatusOK
 	res.Message = "Success"
 	res.Data = arrobj

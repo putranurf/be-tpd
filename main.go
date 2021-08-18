@@ -10,7 +10,7 @@ import (
 
 func main() {
 	//Routes Init
-	e := routes.Init()
+
 	//Env Init
 	err := godotenv.Load()
 	if err != nil {
@@ -19,7 +19,7 @@ func main() {
 
 	//DB Init
 	db.Init()
-
+	routes.Init()
 	// Start server
-	e.Logger.Fatal(e.Start(":1234"))
+	// e.Logger.Fatal(e.Start(":1234"))
 }
