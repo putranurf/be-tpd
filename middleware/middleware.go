@@ -1,62 +1,70 @@
 package middleware
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
 	"os"
+	"strings"
 
-	"github.com/labstack/echo/v4/middleware"
+	"github.com/golang-jwt/jwt"
 )
 
-var IsAuthenticated = middleware.JWTWithConfig(middleware.JWTConfig{
-	SigningKey: []byte(os.Getenv("TOKEN_SECRET")),
-	// TokenLookup: "header:token",
-})
+func MiddlewareJWTAuthorization(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("masuk middleware")
+		if r.URL.Path == "/create-token" {
+			next.ServeHTTP(w, r)
+			return
+		}
+		//Check Token Valid
+		authorizationHeader := r.Header.Get("token")
+		if !strings.Contains(authorizationHeader, "") {
+			// http.Error(w, "Invalid token", http.StatusBadRequest)
+			err, _ := json.Marshal(map[string]interface{}{
+				"status":  http.StatusBadRequest,
+				"message": "Invalid Token",
+			})
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(err)
+			return
+		}
+		tokenString := strings.Replace(authorizationHeader, "Bearer ", "", -1)
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			if method, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("Signing method invalid")
+			} else if method != jwt.SigningMethodHS256 {
+				return nil, fmt.Errorf("Signing method invalid")
+			}
 
-// // TokenRefresherMiddleware middleware, which refreshes JWT tokens if the access token is about to expire.
-// func TokenRefresherMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-// 	return func(c echo.Context) error {
-// 		// If the user is not authenticated (no user token data in the context), don't do anything.
-// 		// user := c.Get("user").(*jwt.Token)
-// 		// claims := user.Claims.(*migration.JwtCustomClaims)
-// 		// name := claims.Name
-// 		fmt.Println(c.Get("user"))
-// 		// fmt.Println(name)
-
-// 		if c.Get("user") == nil {
-// 			return next(c)
-// 		}
-// 		// Gets user token from the context.
-// 		// u := c.Get("user").(*jwt.Token)
-
-// 		claims := (*&migration.Token{})
-
-// 		// We ensure that a new token is not issued until enough time has elapsed
-// 		// In this case, a new token will only be issued if the old token is within
-// 		// 15 mins of expiry.
-// 		if claims.TokenExpired.Sub(time.Now()) < 15*time.Minute {
-// 			// Gets the refresh token from the cookie.
-// 			rc, err := c.Cookie("refresh-token")
-// 			if err == nil && rc != nil {
-// 				// Parses token and checks if it valid.
-// 				_, err := jwt.ParseWithClaims(rc.Value, migration.JwtCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-// 					return []byte(os.Getenv("TOKEN_SECRET")), nil
-// 				})
-// 				if err != nil {
-// 					if err == jwt.ErrSignatureInvalid {
-// 						// c.Response().Writer.WriteHeader(http.StatusUnauthorized)
-// 						fmt.Println("error unathorized")
-// 					}
-// 				}
-
-// 				// if tkn != nil && tkn.Valid {
-// 				// 	// If everything is good, update tokens.
-
-// 				// 	_ = token.GenerateTokensAndSetCookies(&user.User{
-// 				// 		Name: claims.Name,
-// 				// 	}, c)
-// 				// }
-// 			}
-// 		}
-
-// 		return next(c)
-// 	}
-// }
+			return []byte(os.Getenv("JWT_TOKEN_SECRET")), nil
+		})
+		//Check Token Exists
+		if err != nil {
+			// http.Error(w, err.Error(), http.StatusBadRequest)
+			err, _ := json.Marshal(map[string]interface{}{
+				"status":  http.StatusBadRequest,
+				"message": err.Error(),
+			})
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(err)
+			return
+		}
+		//Check Token Expired
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok || !token.Valid {
+			// http.Error(w, err.Error(), http.StatusBadRequest)
+			err, _ := json.Marshal(map[string]interface{}{
+				"status":  http.StatusBadRequest,
+				"message": err.Error(),
+			})
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(err)
+			return
+		}
+		ctx := context.WithValue(context.Background(), "userInfo", claims)
+		r = r.WithContext(ctx)
+		next.ServeHTTP(w, r)
+	})
+}

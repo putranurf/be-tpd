@@ -8,7 +8,7 @@ import (
 	"github.com/putranurf/be-tpd/model/gorm"
 )
 
-func GenerateHashPassword(c echo.Context) error {
+func CreateHashPassword(c echo.Context) error {
 	password := c.Param("password")
 
 	hash, _ := helpers.HashPassword(password)

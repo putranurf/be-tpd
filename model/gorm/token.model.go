@@ -8,11 +8,9 @@ import (
 )
 
 //Fetch Token
-func FetchToken(obj interface{}) (Response, error) {
+func CreateToken(obj interface{}) (Response, error) {
 	var res Response
-
 	origin := obj.(*migration.Token)
-
 	arrobj := migration.Token{
 		Name:         origin.Name,
 		DeviceId:     origin.DeviceId,
@@ -22,11 +20,9 @@ func FetchToken(obj interface{}) (Response, error) {
 		CreatedAt:    origin.CreatedAt,
 		SecretKey:    origin.SecretKey,
 	}
-
 	if err := db.GetDBInstance().Select("Name", "DeviceId", "DeviceType", "Token", "TokenExpired", "CreatedAt", "SecretKey").Create(&arrobj).Error; err != nil {
 		return res, err
 	}
-
 	res.Status = http.StatusOK
 	res.Message = "Success"
 	res.Data = arrobj
