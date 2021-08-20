@@ -5,7 +5,7 @@
 Karena menggunakan Postgres sebagai RDBMS, maka akses
 data-nya menggunakan [GORM](https://gorm.io/docs/index.html).
 Cukup simpan instance `*sql.DB` di
-dalam object `service`, dan create query object di setiap fungsi yg
+dalam object `repo`, dan create query object di setiap fungsi yg
 membutuhkan.
 
 ```golang

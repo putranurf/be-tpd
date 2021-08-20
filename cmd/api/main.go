@@ -7,12 +7,12 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
-	"github.com/putranurf/be-tpd/controller"
-	"github.com/putranurf/be-tpd/controller/auth"
-	"github.com/putranurf/be-tpd/controller/token"
-	"github.com/putranurf/be-tpd/controller/user"
 	"github.com/putranurf/be-tpd/db"
-	middlewares "github.com/putranurf/be-tpd/middleware"
+	controller "github.com/putranurf/be-tpd/internal/service"
+	"github.com/putranurf/be-tpd/internal/service/auth"
+	"github.com/putranurf/be-tpd/internal/service/token"
+	"github.com/putranurf/be-tpd/internal/service/user"
+	middlewares "github.com/putranurf/be-tpd/pkg/middleware"
 )
 
 func main() {
@@ -33,6 +33,7 @@ func main() {
 
 	e.GET("/create-hash/:password", auth.CreateHashPassword, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
 	e.POST("/auth", auth.GetLogin, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
+	e.POST("/reset/:id", auth.CreateReset, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
 
 	e.GET("/list-user", user.ListUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
 	e.PUT("/update-user/:id", user.UpdateUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))

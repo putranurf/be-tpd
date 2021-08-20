@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/putranurf/be-tpd/db"
-	migration "github.com/putranurf/be-tpd/repo/migration/token"
+	migration "github.com/putranurf/be-tpd/internal/repo/migration/token"
 )
 
 //Fetch Token

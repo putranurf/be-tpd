@@ -7,8 +7,8 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
-	"github.com/putranurf/be-tpd/repo/gorm"
-	migration "github.com/putranurf/be-tpd/repo/migration/token"
+	"github.com/putranurf/be-tpd/internal/repo/gorm"
+	migration "github.com/putranurf/be-tpd/internal/repo/migration/token"
 )
 
 func CreateToken(c echo.Context) error {
