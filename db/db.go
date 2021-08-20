@@ -11,7 +11,7 @@ import (
 //DB a global for GORM DB object
 var DB *gorm.DB
 
-//NewDB to initiate Database Connection
+//Init to initiate Database Connection
 func Init() *gorm.DB {
 	var err error
 	conString := config.GetPostgresConnectionString()

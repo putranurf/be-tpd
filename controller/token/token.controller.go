@@ -7,8 +7,8 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
-	"github.com/putranurf/be-tpd/model/gorm"
-	migration "github.com/putranurf/be-tpd/model/migration/token"
+	"github.com/putranurf/be-tpd/repo/gorm"
+	migration "github.com/putranurf/be-tpd/repo/migration/token"
 )
 
 func CreateToken(c echo.Context) error {
@@ -21,7 +21,7 @@ func CreateToken(c echo.Context) error {
 	claims := &migration.JwtCustomClaims{
 		name,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * 1).Unix(),
 		},
 		time.Now(),
 	}
@@ -36,7 +36,7 @@ func CreateToken(c echo.Context) error {
 		device_id,
 		device_type,
 		t,
-		time.Unix(time.Now().Add(time.Minute*15).Unix(), 0),
+		time.Unix(time.Now().Add(time.Minute*1).Unix(), 0),
 		time.Now(),
 		secret_key,
 	}

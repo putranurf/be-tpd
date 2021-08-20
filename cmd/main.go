@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -31,6 +32,7 @@ func main() {
 	e.POST("/create-token", token.CreateToken, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
 
 	e.GET("/create-hash/:password", auth.CreateHashPassword, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
+	e.POST("/auth", auth.GetLogin, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
 
 	e.GET("/list-user", user.ListUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
 	e.PUT("/update-user/:id", user.UpdateUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
@@ -42,8 +44,10 @@ func main() {
 	e.GET("/test-struct", controller.TestStructValidation, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
 	e.GET("/test-var", controller.TestVarValidation, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
 
+	fmt.Println("Masuk BE")
 	// Start server
 	e.Logger.Fatal(e.Start(":1234"))
+
 }
 
 func HandlerIndex(c echo.Context) error {

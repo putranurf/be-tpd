@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/putranurf/be-tpd/db"
-	migration "github.com/putranurf/be-tpd/model/migration/user"
+	migration "github.com/putranurf/be-tpd/repo/migration/user"
 )
 
 func CreateUser(username, password, email string) (Response, error) {

@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo"
-	"github.com/putranurf/be-tpd/model/gorm"
+	"github.com/putranurf/be-tpd/repo/gorm"
 )
 
 //Create User
