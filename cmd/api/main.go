@@ -1,17 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/putranurf/be-tpd/db"
-	controller "github.com/putranurf/be-tpd/internal/service"
-	"github.com/putranurf/be-tpd/internal/service/auth"
+	internalhttp "github.com/putranurf/be-tpd/internal/http"
 	"github.com/putranurf/be-tpd/internal/service/token"
-	"github.com/putranurf/be-tpd/internal/service/user"
 	middlewares "github.com/putranurf/be-tpd/pkg/middleware"
 )
 
@@ -28,31 +24,12 @@ func main() {
 	//DB Init
 	db.Init()
 
-	//Routes Init
+	// Routes Init
 	e.POST("/create-token", token.CreateToken, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
+	internalhttp.InitAuth()
+	internalhttp.InitTest()
+	internalhttp.InitUser()
 
-	e.GET("/create-hash/:password", auth.CreateHashPassword, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-	e.POST("/auth", auth.GetLogin, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-	e.POST("/reset/:id", auth.CreateReset, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-
-	e.GET("/list-user", user.ListUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-	e.PUT("/update-user/:id", user.UpdateUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-	e.POST("/create-user", user.CreateUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-	e.PUT("/delete-user/:id", user.DeleteUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-
-	//Testing API
-	e.GET("/index", HandlerIndex, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-	e.GET("/test-struct", controller.TestStructValidation, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-	e.GET("/test-var", controller.TestVarValidation, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-
-	fmt.Println("Masuk BE")
 	// Start server
 	e.Logger.Fatal(e.Start(":1234"))
-
-}
-
-func HandlerIndex(c echo.Context) error {
-
-	return c.JSON(http.StatusOK, "Hello Index API")
-
 }

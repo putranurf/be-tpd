@@ -21,7 +21,7 @@ func CreateToken(c echo.Context) error {
 	claims := &migration.JwtCustomClaims{
 		name,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * 1).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
 		},
 		time.Now(),
 	}
@@ -36,7 +36,7 @@ func CreateToken(c echo.Context) error {
 		device_id,
 		device_type,
 		t,
-		time.Unix(time.Now().Add(time.Minute*1).Unix(), 0),
+		time.Unix(time.Now().Add(time.Minute*15).Unix(), 0),
 		time.Now(),
 		secret_key,
 	}

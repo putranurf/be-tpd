@@ -8,22 +8,6 @@ import (
 	"github.com/putranurf/be-tpd/internal/repo/gorm"
 )
 
-//Create User
-func CreateUser(c echo.Context) error {
-	username := c.FormValue("username")
-	password := c.FormValue("password")
-	email := c.FormValue("email")
-	_, err := gorm.CreateUser(username, password, email)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"status":  echo.ErrUnauthorized.Code,
-			"message": echo.ErrUnauthorized.Message,
-		})
-	}
-	result, _ := gorm.ListUser()
-	return c.JSON(http.StatusOK, result)
-}
-
 // Get List User
 func ListUser(c echo.Context) error {
 	result, err := gorm.ListUser()

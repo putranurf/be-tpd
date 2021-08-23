@@ -10,12 +10,14 @@ import (
 	"github.com/putranurf/be-tpd/pkg/helpers"
 )
 
+//Hash Password
 func CreateHashPassword(c echo.Context) error {
 	password := c.Param("password")
 	hash, _ := helpers.HashPassword(password)
 	return c.JSON(http.StatusOK, hash)
 }
 
+//Login
 func GetLogin(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
@@ -31,6 +33,7 @@ func GetLogin(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
+//Reset Password
 func CreateReset(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	newPassword := c.FormValue("newpassword")
@@ -51,6 +54,23 @@ func CreateReset(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"status":  echo.ErrBadRequest.Code,
 			"message": echo.ErrBadGateway.Message,
+		})
+	}
+	result, _ := gorm.ListUser()
+	return c.JSON(http.StatusOK, result)
+}
+
+//Register User
+func CreateUser(c echo.Context) error {
+	username := c.FormValue("username")
+	password := c.FormValue("password")
+	email := c.FormValue("email")
+	hash, _ := helpers.HashPassword(password)
+	_, err := gorm.CreateUser(username, hash, email)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  http.StatusConflict,
+			"message": "Error conflict (username) request payload",
 		})
 	}
 	result, _ := gorm.ListUser()
