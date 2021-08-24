@@ -53,13 +53,14 @@ func CreateReset(ctx interface{}) (Response, error) {
 func CreateUser(username, password, email string) (Response, error) {
 	var res Response
 	arrobj := migration.User{
-		Username:  &username,
-		Password:  &password,
-		Email:     &email,
-		Isdeleted: false,
-		CreatedAt: time.Now(),
+		IdMasterUser: helpers.CreateUuid(),
+		Username:     &username,
+		Password:     &password,
+		Email:        &email,
+		Isdeleted:    false,
+		CreatedAt:    time.Now(),
 	}
-	if err := db.GetDBInstance().Select("Username", "Password", "Email", "Isdeleted", "CreatedAt").Create(&arrobj).Error; err != nil {
+	if err := db.GetDBInstance().Select("IdMasterUser", "Username", "Password", "Email", "Isdeleted", "CreatedAt").Create(&arrobj).Error; err != nil {
 		return res, err
 	}
 	res.Status = http.StatusOK

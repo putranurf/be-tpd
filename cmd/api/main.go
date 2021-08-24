@@ -7,14 +7,9 @@ import (
 	"github.com/labstack/echo"
 	"github.com/putranurf/be-tpd/db"
 	internalhttp "github.com/putranurf/be-tpd/internal/http"
-	"github.com/putranurf/be-tpd/internal/service/token"
-	middlewares "github.com/putranurf/be-tpd/pkg/middleware"
 )
 
 func main() {
-	//Routes Init
-	e := echo.New()
-
 	//Env Init
 	err := godotenv.Load()
 	if err != nil {
@@ -25,10 +20,11 @@ func main() {
 	db.Init()
 
 	// Routes Init
-	e.POST("/create-token", token.CreateToken, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-	internalhttp.InitAuth()
-	internalhttp.InitTest()
-	internalhttp.InitUser()
+	e := echo.New()
+	apiGroup := e.Group("/api")
+	internalhttp.InitAuth(apiGroup)
+	internalhttp.InitTest(apiGroup)
+	internalhttp.InitUser(apiGroup)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1234"))

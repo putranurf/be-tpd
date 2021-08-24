@@ -14,7 +14,7 @@ import (
 func MiddlewareJWTAuthorization(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("masuk middleware")
-		if r.URL.Path == "/create-token" {
+		if r.URL.Path == "/api/create-token" {
 			next.ServeHTTP(w, r)
 			return
 		}

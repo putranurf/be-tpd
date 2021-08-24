@@ -6,12 +6,10 @@ import (
 	middlewares "github.com/putranurf/be-tpd/pkg/middleware"
 )
 
-func InitUser() {
-
-	e := echo.New()
-
+func InitUser(group *echo.Group) {
 	// User API
-	e.GET("/list-user", user.ListUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-	e.PUT("/update-user/:id", user.UpdateUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-	e.PUT("/delete-user/:id", user.DeleteUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
+	group.GET("/list-user", user.ListUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
+	group.PUT("/update-user/:id", user.UpdateUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
+	group.PUT("/delete-user/:id", user.DeleteUser, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
+
 }

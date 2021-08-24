@@ -8,13 +8,11 @@ import (
 	middlewares "github.com/putranurf/be-tpd/pkg/middleware"
 )
 
-func InitTest() {
-	e := echo.New()
-
+func InitTest(group *echo.Group) {
 	//Testing API
-	e.GET("/index", HandlerIndex, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-	e.GET("/test-struct", controller.TestStructValidation, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
-	e.GET("/test-var", controller.TestVarValidation, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
+	group.GET("/index", HandlerIndex, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
+	group.GET("/test-struct", controller.TestStructValidation, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
+	group.GET("/test-var", controller.TestVarValidation, echo.WrapMiddleware(middlewares.MiddlewareJWTAuthorization))
 }
 
 func HandlerIndex(c echo.Context) error {
